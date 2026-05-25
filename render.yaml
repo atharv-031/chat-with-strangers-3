@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: chat-with-strangers
+    name: chat-with-strangers-3
     env: node
     plan: free
     rootDir: .
