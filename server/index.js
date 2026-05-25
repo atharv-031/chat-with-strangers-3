@@ -98,7 +98,8 @@ const io = new Server(server, {
     origin: process.env.PUBLIC_ORIGIN || "*",
     methods: ["GET", "POST"],
   },
-  maxHttpBufferSize: 100000,
+  // Allow small binary payloads (attachments) while still limiting abuse.
+  maxHttpBufferSize: 2 * 1024 * 1024,
 });
 
 const MAX_MESSAGE_LEN = 500;
@@ -106,6 +107,8 @@ const MAX_NICK_LEN = 20;
 const MIN_NICK_LEN = 3;
 const MAX_BIO_LEN = 140;
 const MAX_INTERESTS = 8;
+const MAX_FILE_BYTES = 512 * 1024;
+const MAX_FILE_NAME_LEN = 80;
 
 const queues = {
   text: [],
@@ -130,6 +133,14 @@ function sanitizeNickname(value) {
   const cleaned = sanitizeText(value, MAX_NICK_LEN).replace(/[^A-Za-z0-9_ -]/g, "").trim();
   if (cleaned.length < MIN_NICK_LEN) return "";
   return cleaned.slice(0, MAX_NICK_LEN);
+}
+
+function sanitizeFileName(value) {
+  const cleaned = sanitizeText(value, MAX_FILE_NAME_LEN)
+    .replace(/[/\\]/g, " ")
+    .replace(/[^A-Za-z0-9._ -]/g, "")
+    .trim();
+  return cleaned || "file";
 }
 
 function normalizeInterests(value) {
@@ -265,6 +276,13 @@ function canMatch(a, b) {
   return shareInterest(a.profile, b.profile);
 }
 
+function canMatchRelaxed(a, b) {
+  if (!a.profile || !b.profile) return false;
+  if (a.profile.mode !== b.profile.mode) return false;
+  if (isBlocked(a, b) || isBlocked(b, a)) return false;
+  return true;
+}
+
 function pair(a, b) {
   a.partnerId = b.id;
   b.partnerId = a.id;
@@ -299,23 +317,28 @@ function pair(a, b) {
 
 function findMatchFor(socket) {
   const queue = getQueue(socket.profile.mode);
-  for (let i = 0; i < queue.length; i++) {
-    const candidate = queue[i];
-    if (!candidate.connected || candidate.partnerId) {
+  const scan = (matcher) => {
+    for (let i = 0; i < queue.length; i++) {
+      const candidate = queue[i];
+      if (!candidate.connected || candidate.partnerId) {
+        queue.splice(i, 1);
+        i -= 1;
+        continue;
+      }
+      if (candidate.id === socket.id) {
+        queue.splice(i, 1);
+        i -= 1;
+        continue;
+      }
+      if (!matcher(socket, candidate)) continue;
       queue.splice(i, 1);
-      i -= 1;
-      continue;
+      return candidate;
     }
-    if (candidate.id === socket.id) {
-      queue.splice(i, 1);
-      i -= 1;
-      continue;
-    }
-    if (!canMatch(socket, candidate)) continue;
-    queue.splice(i, 1);
-    return candidate;
-  }
-  return null;
+    return null;
+  };
+
+  // Prefer matching by shared interests, but fall back to any partner.
+  return scan(canMatch) || scan(canMatchRelaxed);
 }
 
 function tryMatch(socket) {
@@ -373,6 +396,7 @@ io.on("connection", (socket) => {
   socket.limits = {
     join: createLimiter(3, 60000),
     message: createLimiter(8, 2000),
+    file: createLimiter(2, 8000),
     skip: createLimiter(4, 10000),
     report: createLimiter(2, 60000),
   };
@@ -402,6 +426,47 @@ io.on("connection", (socket) => {
     if (!text) return;
     socket.emit("message", { sender: "You", text, side: "self" });
     socket.partner.emit("message", { sender: socket.profile.nickname, text, side: "partner" });
+  });
+
+  socket.on("file", (payload) => {
+    if (!socket.profile || !socket.partner) return;
+    if (!socket.limits.file()) {
+      socket.emit("system", { text: "Please wait before sending another file." });
+      return;
+    }
+    if (!payload || typeof payload !== "object") return;
+
+    const name = sanitizeFileName(payload.name || "");
+    const mime = sanitizeText(payload.mime || "application/octet-stream", 100) || "application/octet-stream";
+
+    let buffer = null;
+    const data = payload.data;
+    if (Buffer.isBuffer(data)) {
+      buffer = data;
+    } else if (data instanceof ArrayBuffer) {
+      buffer = Buffer.from(new Uint8Array(data));
+    } else if (ArrayBuffer.isView(data) && data.buffer) {
+      buffer = Buffer.from(data);
+    }
+
+    if (!buffer || !buffer.length) return;
+    if (buffer.length > MAX_FILE_BYTES) {
+      socket.emit("system", { text: `File too large. Max ${(MAX_FILE_BYTES / 1024).toFixed(0)}KB.` });
+      return;
+    }
+
+    const filePayloadSelf = { sender: "You", name, mime, size: buffer.length, data: buffer, side: "self" };
+    const filePayloadPartner = {
+      sender: socket.profile.nickname,
+      name,
+      mime,
+      size: buffer.length,
+      data: buffer,
+      side: "partner",
+    };
+
+    socket.emit("file", filePayloadSelf);
+    socket.partner.emit("file", filePayloadPartner);
   });
 
   socket.on("skip", () => {

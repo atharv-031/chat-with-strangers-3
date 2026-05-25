@@ -130,7 +130,7 @@
 </head>
 <body class="bg-bg-deep font-body-md text-on-surface">
 <!-- TopAppBar -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-4 bg-glass-surface backdrop-blur-xl border-b border-glass-border">
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-container-margin py-4 bg-glass-surface backdrop-blur-xl border-b border-glass-border">
 <div class="font-headline-lg text-headline-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             ChatWithStrangers
         </div>
@@ -181,7 +181,7 @@
 </div>
 </aside>
 <!-- Main Content Canvas -->
-<main class="lg:ml-72 pt-28 pb-12 px-container-margin min-h-screen">
+<main class="lg:ml-72 pt-28 pb-12 px-4 md:px-container-margin min-h-screen">
 <div class="max-w-7xl mx-auto">
 <!-- Bento Grid Layout -->
 <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter-bento">
@@ -191,7 +191,7 @@
 <h1 class="font-headline-lg text-headline-lg text-primary mb-2">Ready to Connect?</h1>
 <p class="font-body-md text-body-md text-on-surface-variant max-w-md">Instantly jump into a conversation with someone new. Choose your mode and dive in.</p>
 <!-- Connection Toggles -->
-<div class="flex gap-stack-md mt-8">
+<div class="flex flex-col sm:flex-row gap-stack-md mt-8">
 <button class="flex-1 py-4 glass-card rounded-2xl flex flex-col items-center gap-2 border-primary ring-1 ring-primary neon-glow-primary" id="mode-text" onclick="toggleMode('text')">
 <span class="material-symbols-outlined text-primary text-3xl">chat</span>
 <span class="font-label-caps text-label-caps">Text</span>
@@ -315,7 +315,7 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="w-full py-12 px-container-margin flex flex-col md:flex-row justify-between items-center gap-stack-md bg-bg-deep border-t border-glass-border">
+<footer class="w-full py-12 px-4 md:px-container-margin flex flex-col md:flex-row justify-between items-center gap-stack-md bg-bg-deep border-t border-glass-border">
 <div class="font-label-caps text-label-caps tracking-widest text-secondary">
             © 2024 ChatWithStrangers.
         </div>

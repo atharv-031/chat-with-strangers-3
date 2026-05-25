@@ -27,12 +27,51 @@
   const remoteVideo = document.getElementById("remote-video");
   const localVideo = document.getElementById("local-video");
   const videoPlaceholder = document.getElementById("video-placeholder");
+  const videoCard = document.getElementById("video-card");
+
+  const emojiButton = document.getElementById("emoji-btn");
+  const attachButton = document.getElementById("attach-btn");
+  const fileInput = document.getElementById("file-input");
+
+  const skipButtonMobile = document.getElementById("skip-btn-mobile");
+  const friendButtonMobile = document.getElementById("friend-btn-mobile");
+  const hideButtonMobile = document.getElementById("hide-btn-mobile");
 
   let socket = null;
   let peer = null;
   let localStream = null;
   let videoEnabled = mode === "video";
   let currentPartner = null;
+
+  const MAX_FILE_BYTES = 512 * 1024;
+  const EMOJIS = [
+    "😀",
+    "😁",
+    "😂",
+    "😅",
+    "😊",
+    "😍",
+    "😎",
+    "🤔",
+    "😴",
+    "😭",
+    "😡",
+    "👍",
+    "👎",
+    "🙏",
+    "❤️",
+    "🔥",
+    "🎉",
+    "✨",
+    "😮",
+    "😬",
+    "🙃",
+    "🤝",
+    "💯",
+    "🥳",
+  ];
+
+  let emojiPanel = null;
 
   function scrollToBottom() {
     if (!chatMessages) return;
@@ -65,6 +104,163 @@
     row.appendChild(bubble);
     chatMessages.appendChild(row);
     scrollToBottom();
+  }
+
+  function formatBytes(bytes) {
+    if (!bytes || typeof bytes !== "number") return "";
+    const kb = Math.round(bytes / 1024);
+    if (kb < 1024) return `${kb} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+  }
+
+  function appendFileMessage(payload) {
+    if (!chatMessages || !payload) return;
+    const side = payload.side === "self" ? "self" : payload.side === "partner" ? "partner" : "system";
+
+    const row = document.createElement("div");
+    const bubble = document.createElement("div");
+
+    if (side === "self") {
+      row.className = "flex justify-end";
+      bubble.className =
+        "bg-gradient-to-br from-primary-container to-on-primary-fixed-variant text-white p-4 rounded-2xl rounded-br-none max-w-[80%] font-chat-bubble text-chat-bubble neon-glow-violet message-in";
+    } else if (side === "partner") {
+      row.className = "flex justify-start";
+      bubble.className =
+        "bg-[#1E1E20] border border-glass-border text-on-surface p-4 rounded-2xl rounded-bl-none max-w-[80%] font-chat-bubble text-chat-bubble message-in";
+    } else {
+      row.className = "flex justify-center";
+      bubble.className = "text-xs text-text-muted font-label-caps";
+    }
+
+    const name = CWS.safeText(String(payload.name || "file"), 80) || "file";
+    const sizeText = typeof payload.size === "number" ? formatBytes(payload.size) : "";
+    const label = side === "self" ? "You sent a file" : "File received";
+
+    const header = document.createElement("div");
+    header.className = "text-xs opacity-90";
+    header.textContent = sizeText ? `${label}: ${name} (${sizeText})` : `${label}: ${name}`;
+    bubble.appendChild(header);
+
+    const mime = typeof payload.mime === "string" ? payload.mime : "application/octet-stream";
+    let blob;
+    try {
+      blob = new Blob([payload.data], { type: mime || "application/octet-stream" });
+    } catch (err) {
+      blob = new Blob([payload.data]);
+    }
+
+    const url = URL.createObjectURL(blob);
+
+    if (mime && mime.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = name;
+      img.loading = "lazy";
+      img.className = "mt-3 max-h-64 rounded-xl border border-white/10";
+      bubble.appendChild(img);
+    }
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.className =
+      side === "self"
+        ? "mt-3 inline-block underline text-white"
+        : "mt-3 inline-block underline text-secondary";
+    link.textContent = "Download";
+    bubble.appendChild(link);
+
+    row.appendChild(bubble);
+    chatMessages.appendChild(row);
+    scrollToBottom();
+
+    setTimeout(() => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        // ignore
+      }
+    }, 60000);
+  }
+
+  function insertAtCursor(input, text) {
+    if (!input || !text) return;
+    const start = typeof input.selectionStart === "number" ? input.selectionStart : input.value.length;
+    const end = typeof input.selectionEnd === "number" ? input.selectionEnd : input.value.length;
+    input.value = `${input.value.slice(0, start)}${text}${input.value.slice(end)}`;
+    const next = start + text.length;
+    try {
+      input.setSelectionRange(next, next);
+    } catch (err) {
+      // ignore
+    }
+    input.focus();
+  }
+
+  function ensureEmojiPanel() {
+    if (emojiPanel || !messageInput) return;
+    const anchor = messageInput.parentElement;
+    if (!anchor) return;
+
+    emojiPanel = document.createElement("div");
+    emojiPanel.id = "emoji-panel";
+    emojiPanel.className =
+      "hidden absolute bottom-full right-0 mb-3 glass-card rounded-2xl p-3 border border-glass-border backdrop-blur-xl z-50 w-72 max-w-[calc(100vw-2rem)]";
+
+    const grid = document.createElement("div");
+    grid.className = "grid grid-cols-8 gap-1";
+    EMOJIS.forEach((emoji) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "w-8 h-8 rounded-lg hover:bg-glass-surface flex items-center justify-center";
+      btn.textContent = emoji;
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        insertAtCursor(messageInput, emoji);
+        closeEmojiPanel();
+      });
+      grid.appendChild(btn);
+    });
+
+    emojiPanel.appendChild(grid);
+    anchor.appendChild(emojiPanel);
+  }
+
+  function closeEmojiPanel() {
+    if (!emojiPanel) return;
+    emojiPanel.classList.add("hidden");
+  }
+
+  function toggleEmojiPanel() {
+    ensureEmojiPanel();
+    if (!emojiPanel) return;
+    emojiPanel.classList.toggle("hidden");
+  }
+
+  async function sendFile(file) {
+    if (!socket || !socket.connected) {
+      CWS.showToast("Not connected yet.", "error");
+      return;
+    }
+    if (!file) return;
+    if (file.size > MAX_FILE_BYTES) {
+      CWS.showToast(`File too large. Max ${Math.round(MAX_FILE_BYTES / 1024)}KB.`, "error");
+      return;
+    }
+    try {
+      const data = await file.arrayBuffer();
+      socket.emit("file", {
+        name: file.name,
+        mime: file.type || "application/octet-stream",
+        data,
+      });
+    } catch (err) {
+      CWS.showToast("Could not read this file.", "error");
+    }
   }
 
   function setPartner(profileData) {
@@ -310,6 +506,10 @@
       appendMessage(payload.text, side);
     });
 
+    socket.on("file", (payload) => {
+      appendFileMessage(payload);
+    });
+
     socket.on("webrtc-offer", handleOffer);
     socket.on("webrtc-answer", handleAnswer);
     socket.on("webrtc-ice", handleIce);
@@ -326,15 +526,50 @@
   if (reportButton) reportButton.addEventListener("click", reportPartner);
   if (friendButton) friendButton.addEventListener("click", addFriend);
   if (hideButton) hideButton.addEventListener("click", hidePartner);
+  if (skipButtonMobile) skipButtonMobile.addEventListener("click", skipPartner);
+  if (friendButtonMobile) friendButtonMobile.addEventListener("click", addFriend);
+  if (hideButtonMobile) hideButtonMobile.addEventListener("click", hidePartner);
   if (navStart) navStart.addEventListener("click", () => CWS.navigate("/dashboard"));
   if (micToggle) micToggle.addEventListener("click", toggleMic);
   if (videoToggle) videoToggle.addEventListener("click", toggleVideo);
+
+  if (emojiButton) {
+    emojiButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleEmojiPanel();
+    });
+  }
+
+  if (attachButton && fileInput) {
+    attachButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      fileInput.click();
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files && fileInput.files[0];
+      fileInput.value = "";
+      await sendFile(file);
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!emojiPanel || emojiPanel.classList.contains("hidden")) return;
+    const target = event.target;
+    if (emojiPanel.contains(target)) return;
+    if (emojiButton && emojiButton.contains(target)) return;
+    closeEmojiPanel();
+  });
 
   if (mode !== "video") {
     if (videoToggle) videoToggle.classList.add("hidden");
     if (micToggle) micToggle.classList.add("hidden");
     if (remoteVideo) remoteVideo.classList.add("hidden");
     if (localVideo) localVideo.classList.add("hidden");
+    if (videoCard) videoCard.classList.add("hidden");
   }
 
   setPartner(null);

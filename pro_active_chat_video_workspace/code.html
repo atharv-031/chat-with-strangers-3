@@ -143,7 +143,7 @@
 </head>
 <body class="bg-bg-deep text-on-surface font-body-md selection:bg-primary selection:text-on-primary-container">
 <!-- Top Navigation -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-4 bg-glass-surface backdrop-blur-xl border-b border-glass-border">
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-container-margin py-4 bg-glass-surface backdrop-blur-xl border-b border-glass-border">
 <div class="font-headline-lg text-headline-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             ChatWithStrangers
         </div>
@@ -194,10 +194,10 @@
 </div>
 </aside>
 <!-- Main Content Area -->
-<main class="lg:ml-72 mt-24 min-h-[calc(100vh-6rem)] p-stack-md lg:p-container-margin">
+<main class="lg:ml-72 mt-20 md:mt-24 min-h-[calc(100vh-6rem)] p-stack-md lg:p-container-margin">
 <div class="max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter-bento h-full">
 <!-- Central Chat Container (Bento Tile) -->
-<section class="col-span-12 xl:col-span-8 flex flex-col glass-card rounded-3xl h-[819px] overflow-hidden relative border border-glass-border">
+<section class="col-span-12 xl:col-span-8 flex flex-col glass-card rounded-3xl h-[calc(100vh-11rem)] md:h-[calc(100vh-10rem)] xl:h-[819px] min-h-[520px] overflow-hidden relative border border-glass-border">
 <div class="px-card-padding py-4 border-b border-glass-border flex items-center justify-between bg-glass-surface/50">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
@@ -221,20 +221,37 @@
 <div class="flex-grow relative neon-border-cyan group">
 <input class="w-full bg-bg-deep border border-glass-border rounded-2xl px-6 py-4 text-on-surface focus:outline-none focus:border-secondary transition-all" id="message-input" placeholder="Type a message..." type="text"/>
 <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="mood">mood</span></button>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="attach_file">attach_file</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" id="emoji-btn" type="button"><span class="material-symbols-outlined" data-icon="mood">mood</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" id="attach-btn" type="button"><span class="material-symbols-outlined" data-icon="attach_file">attach_file</span></button>
+<input class="hidden" id="file-input" type="file"/>
 </div>
 </div>
 <button class="bg-primary text-on-primary-container p-4 rounded-2xl active:scale-95 transition-transform" id="send-btn">
 <span class="material-symbols-outlined" data-icon="send">send</span>
 </button>
 </div>
+<!-- Mobile Quick Actions (near textbox) -->
+<div class="mt-4 grid grid-cols-3 gap-3 xl:hidden">
+<button class="flex flex-col items-center justify-center gap-2 p-3 glass-card rounded-2xl text-error hover:bg-error/10 transition-colors" id="skip-btn-mobile" type="button">
+<span class="material-symbols-outlined" data-icon="skip_next">skip_next</span>
+<span class="text-[10px] font-label-caps">SKIP</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-3 glass-card rounded-2xl text-primary hover:bg-primary/10 transition-colors" id="friend-btn-mobile" type="button">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="text-[10px] font-label-caps">FRIEND</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-3 glass-card rounded-2xl text-secondary hover:bg-secondary/10 transition-colors" id="hide-btn-mobile" type="button">
+<span class="material-symbols-outlined" data-icon="visibility_off">visibility_off</span>
+<span class="text-[10px] font-label-caps">HIDE</span>
+</button>
+</div>
+</div>
 </div>
 </section>
 <!-- Right Panel: Video & Info (Bento Tile) -->
 <section class="col-span-12 xl:col-span-4 flex flex-col gap-gutter-bento">
 <!-- Video Feed -->
-<div class="glass-card rounded-3xl overflow-hidden aspect-video xl:aspect-square relative border border-glass-border group">
+<div class="glass-card rounded-3xl overflow-hidden aspect-video xl:aspect-square relative border border-glass-border group" id="video-card">
 <div class="absolute inset-0 bg-gradient-to-br from-bg-deep via-surface-container-low to-surface-container-high" id="video-placeholder"></div>
 <video class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" id="remote-video" autoplay playsinline></video>
 <video class="absolute bottom-4 right-4 w-24 h-24 md:w-28 md:h-28 rounded-xl object-cover border border-white/10 bg-black/40" id="local-video" autoplay muted playsinline></video>
@@ -271,7 +288,7 @@
 </div>
 </div>
 <!-- Quick Actions -->
-<div class="grid grid-cols-3 gap-3">
+<div class="hidden xl:grid grid-cols-3 gap-3">
 <button class="flex flex-col items-center justify-center gap-2 p-4 glass-card rounded-2xl text-error hover:bg-error/10 transition-colors" id="skip-btn">
 <span class="material-symbols-outlined" data-icon="skip_next">skip_next</span>
 <span class="text-[10px] font-label-caps">SKIP</span>
@@ -289,7 +306,7 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="w-full py-12 px-container-margin flex flex-col md:flex-row justify-between items-center gap-stack-md bg-bg-deep border-t border-glass-border">
+<footer class="w-full py-12 px-4 md:px-container-margin flex flex-col md:flex-row justify-between items-center gap-stack-md bg-bg-deep border-t border-glass-border">
 <div class="font-label-caps text-label-caps tracking-widest text-secondary">
             © 2024 ChatWithStrangers.
         </div>
