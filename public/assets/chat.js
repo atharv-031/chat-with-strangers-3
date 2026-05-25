@@ -157,7 +157,7 @@
       img.src = url;
       img.alt = name;
       img.loading = "lazy";
-      img.className = "mt-3 max-h-64 rounded-xl border border-white/10";
+      img.className = "mt-3 max-h-64 rounded-xl border border-glass-border";
       bubble.appendChild(img);
     }
 
