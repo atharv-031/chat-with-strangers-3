@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&amp;family=Geist:wght@400;450;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0A0A0C;
+            color: #e5e1e4;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+        }
+        .neon-border-cyan:focus-within {
+            border-color: #4cd7f6;
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for bento feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "bg-deep": "#0A0A0C",
+                        "surface-container-highest": "#353437",
+                        "primary-fixed": "#e9ddff",
+                        "surface-variant": "#353437",
+                        "on-primary": "#3c0091",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "primary": "#d0bcff",
+                        "surface-container-high": "#2a2a2c",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                        "on-tertiary": "#482900",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "on-error": "#690005",
+                        "glass-surface": "rgba(255, 255, 255, 0.04)",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-secondary": "#003640",
+                        "primary-fixed-dim": "#d0bcff",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#ca801e",
+                        "on-tertiary-fixed-variant": "#673d00",
+                        "primary-container": "#a078ff",
+                        "on-secondary-fixed": "#001f26",
+                        "surface-container": "#201f21",
+                        "on-primary-container": "#340080",
+                        "on-tertiary-fixed": "#2c1700",
+                        "on-background": "#e5e1e4",
+                        "surface-container-low": "#1b1b1d",
+                        "tertiary-fixed": "#ffdcbb",
+                        "on-primary-fixed": "#23005c",
+                        "on-error-container": "#ffdad6",
+                        "inverse-primary": "#6d3bd7",
+                        "background": "#131315",
+                        "tertiary": "#ffb869",
+                        "surface-container-lowest": "#0e0e10",
+                        "tertiary-fixed-dim": "#ffb869",
+                        "on-secondary-container": "#00424e",
+                        "surface-dim": "#131315",
+                        "outline-variant": "#494454",
+                        "surface": "#131315",
+                        "on-surface": "#e5e1e4",
+                        "surface-tint": "#d0bcff",
+                        "secondary-fixed": "#acedff",
+                        "text-muted": "#94A3B8",
+                        "on-surface-variant": "#cbc3d7",
+                        "inverse-surface": "#e5e1e4",
+                        "surface-bright": "#39393b",
+                        "inverse-on-surface": "#303032",
+                        "outline": "#958ea0",
+                        "on-tertiary-container": "#3f2300",
+                        "secondary-container": "#03b5d3",
+                        "error": "#ffb4ab",
+                        "secondary": "#4cd7f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "bento": "24px"
+                    },
+                    "spacing": {
+                        "stack-md": "1rem",
+                        "container-margin": "2rem",
+                        "gutter-bento": "1.5rem",
+                        "stack-sm": "0.5rem",
+                        "card-padding": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "chat-bubble": ["Geist"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "chat-bubble": ["15px", {"lineHeight": "22px", "fontWeight": "450"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-bg-deep font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-4 bg-glass-surface backdrop-blur-xl border-b border-glass-border">
+<div class="font-headline-lg text-headline-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            ChatWithStrangers
+        </div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" data-scroll="hero-connect" href="#">Home</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors" data-scroll="popular-groups" href="#">Explore Groups</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors" data-toast="Be respectful, report abuse, and never share personal info." href="#">Safety</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="transition-all duration-300 ease-in-out active:scale-95 bg-primary text-on-primary px-6 py-2 rounded-full font-label-caps text-label-caps font-bold hover:shadow-[0_0_20px_rgba(208,188,255,0.4)]" id="start-chat">
+                Start Chatting
+            </button>
+<span class="material-symbols-outlined text-3xl text-primary cursor-pointer">account_circle</span>
+</div>
+</header>
+<!-- Sidebar Navigation -->
+<aside class="hidden lg:flex flex-col fixed left-0 top-20 h-[calc(100vh-5rem)] p-stack-md bg-surface-container-low w-72 rounded-r-3xl border-r border-glass-border shadow-2xl z-40">
+<div class="mb-8 px-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Dashboard</h2>
+<p class="font-body-sm text-body-sm text-text-muted">Premium Member</p>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-xl px-4 py-3 shadow-[0_0_15px_rgba(208,188,255,0.2)] transition-all duration-200 hover:translate-x-1 cursor-pointer" data-scroll="recent-encounters">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-label-caps text-label-caps">Recent Chats</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:bg-glass-surface rounded-xl px-4 py-3 transition-all duration-200 hover:translate-x-1 cursor-pointer" data-scroll="popular-groups">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-caps text-label-caps">My Groups</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:bg-glass-surface rounded-xl px-4 py-3 transition-all duration-200 hover:translate-x-1 cursor-pointer" data-scroll="interest-filter">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-label-caps text-label-caps">Interests</span>
+</div>
+</div>
+<button class="mt-8 mx-4 bg-secondary text-on-secondary py-3 rounded-xl font-bold font-label-caps text-label-caps transition-all active:scale-95" id="new-chat">
+            New Chat
+        </button>
+<div class="mt-auto border-t border-glass-border pt-4 flex flex-col gap-2">
+<div class="flex items-center gap-3 text-on-surface-variant hover:bg-glass-surface rounded-xl px-4 py-3 cursor-pointer" id="settings-btn">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:bg-glass-surface rounded-xl px-4 py-3 cursor-pointer" id="help-btn">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-caps text-label-caps">Help</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-72 pt-28 pb-12 px-container-margin min-h-screen">
+<div class="max-w-7xl mx-auto">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter-bento">
+<!-- Hero Section: Ready to Connect? (8 cols) -->
+<section class="md:col-span-8 glass-card rounded-bento p-card-padding flex flex-col justify-between relative overflow-hidden min-h-[400px]" id="hero-connect">
+<div class="relative z-10">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Ready to Connect?</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Instantly jump into a conversation with someone new. Choose your mode and dive in.</p>
+<!-- Connection Toggles -->
+<div class="flex gap-stack-md mt-8">
+<button class="flex-1 py-4 glass-card rounded-2xl flex flex-col items-center gap-2 border-primary ring-1 ring-primary neon-glow-primary" id="mode-text" onclick="toggleMode('text')">
+<span class="material-symbols-outlined text-primary text-3xl">chat</span>
+<span class="font-label-caps text-label-caps">Text</span>
+</button>
+<button class="flex-1 py-4 glass-card rounded-2xl flex flex-col items-center gap-2 hover:bg-glass-surface transition-all" id="mode-video" onclick="toggleMode('video')">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">videocam</span>
+<span class="font-label-caps text-label-caps">Video</span>
+</button>
+<button class="flex-1 py-4 glass-card rounded-2xl flex flex-col items-center gap-2 hover:bg-glass-surface transition-all" id="mode-groups" onclick="toggleMode('groups')">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">groups_3</span>
+<span class="font-label-caps text-label-caps">Groups</span>
+</button>
+</div>
+<!-- Interest Tags -->
+<div class="mt-8" id="interest-filter">
+<label class="font-label-caps text-label-caps text-text-muted mb-3 block">FILTER BY INTERESTS</label>
+<div class="flex flex-wrap gap-2" id="interest-list">
+<span class="px-4 py-1 rounded-full bg-glass-surface border border-glass-border font-label-caps text-label-caps hover:border-secondary cursor-pointer transition-all" data-interest="TECHNOLOGY">#Technology</span>
+<span class="px-4 py-1 rounded-full bg-glass-surface border border-glass-border font-label-caps text-label-caps hover:border-secondary cursor-pointer transition-all" data-interest="DESIGN">#Design</span>
+<span class="px-4 py-1 rounded-full bg-glass-surface border border-glass-border font-label-caps text-label-caps hover:border-secondary cursor-pointer transition-all" data-interest="MUSIC">#Music</span>
+<span class="px-4 py-1 rounded-full bg-glass-surface border border-glass-border font-label-caps text-label-caps hover:border-secondary cursor-pointer transition-all" data-interest="GAMING">#Gaming</span>
+<button class="px-4 py-1 rounded-full bg-primary/20 border border-primary text-primary font-label-caps text-label-caps cursor-pointer" id="add-interest" type="button">+ Add More</button>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full bg-gradient-to-r from-primary to-secondary py-5 rounded-2xl font-bold font-headline-lg-mobile text-headline-lg-mobile text-on-primary shadow-xl hover:scale-[1.02] active:scale-95 transition-all" id="launch-connection">
+                        Launch Connection
+                    </button>
+<!-- Abstract Background Element -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
+</section>
+<!-- Global Network Panel (4 cols) -->
+<aside class="md:col-span-4 glass-card rounded-bento p-card-padding flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-label-caps text-label-caps text-text-muted">GLOBAL NETWORK</h3>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-secondary">LIVE</span>
+</div>
+</div>
+<div class="text-center py-8">
+<div class="font-display-lg text-display-lg text-secondary" id="online-count">12,402</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Strangers Online Now</p>
+</div>
+<div class="mt-auto space-y-4" id="global-activity">
+<div class="glass-card rounded-xl p-3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Active User" class="w-full h-full object-cover" data-alt="A close-up portrait of a young woman with neon cyan lighting reflecting on her face, in a futuristic cyber setting. She has a tech-inspired aesthetic, with subtle digital overlays in her eyes. The atmosphere is professional and high-end, using a dark background with violet accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBffTQfkK5vmeQhTihHB_W4KtnB3AlCr6w8swcIanSTlg6dFj4QMtOelqkI1bJ1YSHprKKgAuj82jGieBHTXa9m_oMNiiVYZlH-UgHwFydIRSIoX_BekW6e7vVbTPvayLE_0WK3-QTp605_EFMEBDnYQVUXFpxAGUKkVYH3R02t7g3PZa2nHUBitwc_Cgg3Y_YABGtFG2uTjR-m_yuYn-Haz0HKxo16rXy0kZ_2njq33xzFXgASKxkfEJsQgmoqlBdv_5i0PjGjY40"/>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface">Alex connected to Sarah</p>
+<p class="text-[10px] text-text-muted">2 seconds ago · Tokyo</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Active User" class="w-full h-full object-cover" data-alt="A portrait of a male gamer in a dark room with vibrant violet and magenta ambient lighting. He is wearing high-end sleek headphones with a subtle glow. The image has a cinematic quality with deep shadows and sharp neon highlights, perfectly matching a premium futuristic chat platform aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeHxVhhjFe0W3KcQjAiDIYo3pbH0Xn05pCeHBoKuZa4mkZl6I9ZxY95It7MW2qFc8XGvCjCHLFu2Lu0ztV_2ZhfsxYmIMBJn77M7Uw4TbL9lPAGXzVp9qKJxBADTU1IKPWXzhRZg52PJvKMpOabjyZULqX61Ck_PlAo4dV0NALIFFpOeQstkypvwVjHEIf0wei8QNmBuN0DSAHb6hgB8C-9DCI08cpi0RzBlimBMEzsMnoHutf52YOTC0bvIjnDdoa7Y559Xd3gRA"/>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface">New Group: Design Systems</p>
+<p class="text-[10px] text-text-muted">15 seconds ago · Berlin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Popular Groups (6 cols) -->
+<section class="md:col-span-6 glass-card rounded-bento p-card-padding" id="popular-groups">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Popular Groups</h3>
+<a class="font-label-caps text-label-caps text-secondary hover:underline" href="#" id="view-all-groups">View All</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="popular-group-list">
+<div class="glass-card p-4 rounded-2xl hover:border-secondary/50 transition-all group cursor-pointer" data-group-tag="NIGHT OWLS">
+<div class="w-full h-24 rounded-xl mb-3 overflow-hidden">
+<img alt="Group Thumbnail" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="An abstract digital background with flowing waves of electric violet and deep charcoal. The style is minimalist and high-end, featuring smooth gradients and a subtle 1px neon glow along the edges of the shapes. It evokes a feeling of digital connection and modern aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrwTGmceoYLVnhVJe5OozjvAZEJD5xEvrs7SLKeQcsNAFBjJOIBebJ6QUPtg76QMgvatKdA0wz9vzJZ59F0ynFR8vXolB7QtNOOiEPC9AjSDBNVuLb2QEPEjvsHyJIrRRz6MouOqo0KYumtB7bfzfXuBdMVy6nW0ePVWOS5wP7E4-gwNluCySCJDQJs52T0pbVjjMj2kE6pMdEj1z4RVRC1UWceQGWzpjMpbkybLPBcM1rTmGql9Mn-VgxyT3T5_rivtoNQlYYrqQ"/>
+</div>
+<h4 class="font-label-caps text-label-caps">Night Owls Chat</h4>
+<p class="text-xs text-text-muted mt-1">428 members active</p>
+</div>
+<div class="glass-card p-4 rounded-2xl hover:border-secondary/50 transition-all group cursor-pointer" data-group-tag="RETRO GAMING">
+<div class="w-full h-24 rounded-xl mb-3 overflow-hidden">
+<img alt="Group Thumbnail" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A high-tech digital workspace featuring retro-futuristic electronics and glowing cyan screens in a darkened room. The aesthetic is vaporwave-inspired but refined for a premium user interface, with soft blurs and crisp neon outlines of hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx8nsgAYwWzVBYvrtjE_et8tPcKpYCQWPi0wK9eVl0WmXKH6icdgMzw3dIaA8JM4EYPmddeHMQLVlAacijM3nuy0EpEtZe1ZAAjJCVMY-DEBkfrn9jgwvqVETVQPzq7knVNxJa8TqSbwEuMhhQUGHGfMu9dV4W5QIffKJJh8VZfGow5hxBn_tFmyN2U6K1qKqXY3L7qNOll6cuTIw6rG4Pkgm6tfsMmYPVUx163qZG1-3bvx1x11De4h15Uy-yUG55NCBGkt3CV44"/>
+</div>
+<h4 class="font-label-caps text-label-caps">Retro Gaming</h4>
+<p class="text-xs text-text-muted mt-1">1.2k members active</p>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden" id="extra-groups"></div>
+</section>
+<!-- Recent Encounters (6 cols) -->
+<section class="md:col-span-6 glass-card rounded-bento p-card-padding" id="recent-encounters">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-6">Recent Encounters</h3>
+<div class="space-y-4" id="recent-list">
+<div class="flex items-center justify-between p-3 rounded-xl hover:bg-glass-surface transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest border-2 border-primary">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a modern urban individual in a dimly lit setting with soft violet backlighting. The subject has a cool, approachable expression. The image quality is high-resolution with a shallow depth of field, focused on clear facial features and rich skin tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbCDTZFGQw5rDo2C9rwayMLGrxkLxzwkv6mCU6pVNU4sV37fCTBHuvQAPahokKdO--SXH36FKOd2ZiWuJstF-IEL76owVwoHz0pqhzb4XE5Ij3VPxypeezlPBeoBRWhpJgDM7VFGpfc3UXdXWni9pcvMkV1wep77Io2CxxvY6Tg-b_BNfId_zDnIHaZe6cdt1eKB_twmWaVvpf6AIapxZp1AFaRygIhACtVZFHsXf9K5TMUiDgyWLuozNSxTAKzaWOJIEnkpiikPk"/>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps">Stranger #4920</h4>
+<p class="text-xs text-text-muted">Connected for 15m · Yesterday</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary">more_vert</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl hover:bg-glass-surface transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest border-2 border-secondary">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A portrait of a creative professional with vibrant amber lighting highlighting their profile against a dark, minimalist background. The style is sleek and premium, emphasizing clean lines and high-contrast digital photography suitable for a futuristic app interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdwwtorvI-CCc33dNdjsdzFXA_xqviBF4NQfEOHFQistQDSnMOTEIwP2KCAyWhtQ6MpPl7czjwmsOcbn7ef7XlbL2Jb7Ymo_IHtvHM0uplsun1oEo6-pJaIoG6Z73C3fMGw8zixsH4_fc-x2x_t3P6PCAcdQSm1Gjcswmnbfh2L2hd0Y4FeHYQsDLAPmZKw0reVfUSsfXRwnL-EZ411xA1XeD57ioev6b5zKxktC3KeZMDXQwJkrCF23eS91y631JCCAt6eS_lLk4"/>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps">Stranger #1102</h4>
+<p class="text-xs text-text-muted">Connected for 4m · 2 hours ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary">more_vert</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-container-margin flex flex-col md:flex-row justify-between items-center gap-stack-md bg-bg-deep border-t border-glass-border">
+<div class="font-label-caps text-label-caps tracking-widest text-secondary">
+            © 2024 ChatWithStrangers.
+        </div>
+<div class="flex gap-8">
+<a class="font-label-caps text-label-caps text-text-muted hover:text-primary transition-colors" href="#">TOS</a>
+<a class="font-label-caps text-label-caps text-text-muted hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-caps text-label-caps text-text-muted hover:text-primary transition-colors" href="#">Socials</a>
+</div>
+</footer>
+<script src="/assets/common.js" defer></script>
+<script src="/assets/dashboard.js" defer></script>
+</body></html>
