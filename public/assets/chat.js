@@ -42,6 +42,10 @@
   let localStream = null;
   let videoEnabled = mode === "video";
   let currentPartner = null;
+  let peerInitPromise = null;
+  let pendingIceCandidates = [];
+  let localTracksAdded = false;
+  let isInitiator = false;
 
   const MAX_FILE_BYTES = 512 * 1024;
   const EMOJIS = [
@@ -72,6 +76,7 @@
   ];
 
   let emojiPanel = null;
+  let remotePlayPrompted = false;
 
   function scrollToBottom() {
     if (!chatMessages) return;
@@ -324,6 +329,15 @@
     }
   }
 
+  function attemptRemotePlay() {
+    if (!remoteVideo) return;
+    remoteVideo.play().catch(() => {
+      if (remotePlayPrompted) return;
+      remotePlayPrompted = true;
+      CWS.showToast("Tap the video to enable audio.", "info");
+    });
+  }
+
   function updateVideoUI() {
     if (!videoToggle) return;
     if (videoEnabled) {
@@ -338,53 +352,109 @@
     }
   }
 
-  async function createPeer(initiator) {
-    peer = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-      ],
-    });
+  async function addLocalTracksIfNeeded() {
+    if (!peer || !localStream || localTracksAdded) return;
+    localStream.getTracks().forEach((track) => peer.addTrack(track, localStream));
+    localTracksAdded = true;
+  }
 
-    peer.onicecandidate = (event) => {
-      if (event.candidate && socket) socket.emit("webrtc-ice", event.candidate);
-    };
+  async function preparePeer(initiator) {
+    if (peer) return;
+    if (peerInitPromise) return peerInitPromise;
+    isInitiator = initiator;
 
-    peer.ontrack = (event) => {
-      if (remoteVideo) {
-        remoteVideo.srcObject = event.streams[0];
-        remoteVideo.play().catch(() => {});
-      }
-      if (videoPlaceholder) videoPlaceholder.classList.add("hidden");
-    };
+    peerInitPromise = (async () => {
+      peer = new RTCPeerConnection({
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" },
+        ],
+      });
 
-    const stream = await ensureLocalStream();
-    if (stream) {
-      stream.getTracks().forEach((track) => peer.addTrack(track, stream));
-    }
+      peer.onicecandidate = (event) => {
+        if (event.candidate && socket) socket.emit("webrtc-ice", event.candidate);
+      };
 
-    if (initiator) {
-      const offer = await peer.createOffer();
-      await peer.setLocalDescription(offer);
-      socket.emit("webrtc-offer", peer.localDescription);
+      peer.ontrack = (event) => {
+        if (remoteVideo) {
+          remoteVideo.srcObject = event.streams[0];
+          attemptRemotePlay();
+        }
+        if (videoPlaceholder) videoPlaceholder.classList.add("hidden");
+      };
+
+      peer.onconnectionstatechange = () => {
+        if (!peer) return;
+        if (peer.connectionState === "failed") {
+          appendMessage("Video connection failed. Try skipping to reconnect.", "system");
+        }
+      };
+
+      await ensureLocalStream();
+      await addLocalTracksIfNeeded();
+    })();
+
+    try {
+      await peerInitPromise;
+    } finally {
+      peerInitPromise = null;
     }
   }
 
+  async function makeOffer() {
+    if (!peer || !socket) return;
+    if (peer.signalingState !== "stable") return;
+    try {
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+      socket.emit("webrtc-offer", peer.localDescription);
+    } catch (err) {
+      appendMessage("Could not start video chat. Try again.", "system");
+    }
+  }
+
+  async function flushPendingIce() {
+    if (!peer || !pendingIceCandidates.length) return;
+    const queue = pendingIceCandidates.slice();
+    pendingIceCandidates = [];
+    for (const candidate of queue) {
+      try {
+        await peer.addIceCandidate(candidate);
+      } catch (err) {
+        // ignore
+      }
+    }
+  }
+
+  async function startCall(initiator) {
+    await preparePeer(initiator);
+    if (initiator) await makeOffer();
+  }
+
   async function handleOffer(offer) {
-    if (!peer) await createPeer(false);
+    await preparePeer(false);
+    if (!peer) return;
     await peer.setRemoteDescription(offer);
+    await ensureLocalStream();
+    await addLocalTracksIfNeeded();
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);
     socket.emit("webrtc-answer", peer.localDescription);
+    await flushPendingIce();
   }
 
   async function handleAnswer(answer) {
     if (!peer) return;
     await peer.setRemoteDescription(answer);
+    await flushPendingIce();
   }
 
   async function handleIce(candidate) {
     if (!peer || !candidate) return;
+    if (!peer.remoteDescription || !peer.remoteDescription.type) {
+      pendingIceCandidates.push(candidate);
+      return;
+    }
     try {
       await peer.addIceCandidate(candidate);
     } catch (err) {
@@ -399,6 +469,11 @@
       peer.close();
       peer = null;
     }
+    peerInitPromise = null;
+    pendingIceCandidates = [];
+    localTracksAdded = false;
+    isInitiator = false;
+    remotePlayPrompted = false;
     if (remoteVideo) remoteVideo.srcObject = null;
     if (videoPlaceholder) videoPlaceholder.classList.remove("hidden");
   }
@@ -483,11 +558,17 @@
       appendMessage("Searching for a partner...", "system");
     });
 
-    socket.on("partner", (payload) => {
+    socket.on("partner", async (payload) => {
       clearMessages();
       setPartner(payload.profile);
       resetPeer();
-      if (mode === "video") createPeer(!!payload.initiator);
+      if (mode === "video") {
+        try {
+          await startCall(!!payload.initiator);
+        } catch (err) {
+          appendMessage("Could not start video chat. Try skipping.", "system");
+        }
+      }
     });
 
     socket.on("partner-left", () => {
@@ -571,6 +652,8 @@
     if (localVideo) localVideo.classList.add("hidden");
     if (videoCard) videoCard.classList.add("hidden");
   }
+
+  if (videoCard) videoCard.addEventListener("click", attemptRemotePlay);
 
   setPartner(null);
   connectSocket();
